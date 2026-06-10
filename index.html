@@ -501,138 +501,173 @@
   <span>İstanbul, Türkiye</span>
 </footer>
 
-<!-- ════════════════════════════════════════════════════════════
-     LexCore Chatbot Widget
-     ════════════════════════════════════════════════════════════
-     CHATBOT_URL'yi ngrok veya gerçek sunucu adresiyle güncelle.
-     Örnek: https://abc123.ngrok-free.app
-     ════════════════════════════════════════════════════════════ -->
+<!-- LexCore Chatbot Widget — İletişim Formu -->
 <script>
 (function () {
   'use strict';
-  var API = 'https://ramonita-photoelectric-alexander.ngrok-free.dev';
-  var HEADERS = { 'Content-Type': 'application/json', 'ngrok-skip-browser-warning': '1' };
-  var params = new URLSearchParams(window.location.search);
-  var token = params.get('chat');
   if (document.getElementById('lc-btn')) return;
 
-  var s = document.createElement('style');
-  s.textContent =
-    '#lc-btn{position:fixed;bottom:24px;right:24px;z-index:2147483646;width:58px;height:58px;border-radius:50%;background:#0f2044;color:white;border:none;font-size:24px;cursor:pointer;box-shadow:0 4px 20px rgba(15,32,68,.5);transition:transform .2s;display:flex;align-items:center;justify-content:center;}' +
-    '#lc-btn:hover{transform:scale(1.08);}#lc-btn.open{transform:scale(.92);}' +
-    '#lc-panel{position:fixed;bottom:92px;right:24px;z-index:2147483645;width:360px;height:540px;border-radius:16px;background:#fff;box-shadow:0 16px 56px rgba(0,0,0,.2);display:flex;flex-direction:column;overflow:hidden;transition:opacity .25s,transform .25s;opacity:0;transform:translateY(10px) scale(.97);pointer-events:none;}' +
-    '#lc-panel.open{opacity:1;transform:none;pointer-events:auto;}' +
-    '#lc-head{background:#0f2044;color:#fff;padding:12px 16px;display:flex;align-items:center;gap:10px;flex-shrink:0;}' +
-    '#lc-head .av{width:36px;height:36px;background:rgba(255,255,255,.15);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}' +
-    '#lc-head h3{font-size:13px;font-weight:600;margin:0;}#lc-head p{font-size:11px;opacity:.7;margin:0;}' +
-    '#lc-msgs{flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:8px;background:#f8fafc;}' +
-    '.lc-msg{max-width:80%;padding:8px 11px;border-radius:12px;font-size:13px;line-height:1.5;word-break:break-word;}' +
-    '.lc-msg.client{background:#0f2044;color:#fff;align-self:flex-end;border-bottom-right-radius:3px;}' +
-    '.lc-msg.lawyer{background:#fff;color:#1e293b;align-self:flex-start;border-bottom-left-radius:3px;box-shadow:0 1px 4px rgba(0,0,0,.08);}' +
-    '.lc-msg .mt{font-size:10px;opacity:.55;margin-top:3px;}' +
-    '.lc-empty{text-align:center;color:#94a3b8;font-size:12px;padding:32px 16px;margin:auto;}' +
-    '#lc-bar{padding:10px 12px;border-top:1px solid #e2e8f0;display:flex;gap:8px;flex-shrink:0;}' +
-    '#lc-bar input{flex:1;padding:9px 12px;border:1.5px solid #e2e8f0;border-radius:10px;font-size:13px;outline:none;}' +
-    '#lc-bar input:focus{border-color:#0f2044;}' +
-    '#lc-bar button{padding:9px 14px;background:#0f2044;color:#fff;border:none;border-radius:10px;font-size:15px;cursor:pointer;}' +
-    '#lc-bar button:disabled{opacity:.5;}' +
-    '#lc-join{flex:1;display:flex;align-items:center;justify-content:center;padding:24px;background:#f8fafc;}' +
-    '.lc-jcard{background:#fff;border-radius:14px;padding:28px 20px;text-align:center;width:100%;box-shadow:0 2px 12px rgba(0,0,0,.07);}' +
-    '.lc-spin{width:32px;height:32px;border:3px solid #e0e7ff;border-top-color:#0f2044;border-radius:50%;animation:lcspin .8s linear infinite;margin:0 auto 14px;}' +
-    '@keyframes lcspin{to{transform:rotate(360deg)}}' +
-    '.lc-jcard p{font-size:13px;color:#475569;}.lc-err{color:#dc2626!important;}' +
-    '@media(max-width:440px){#lc-panel{width:calc(100vw - 16px);right:8px;bottom:80px;}}';
-  document.head.appendChild(s);
+  var CHATBOT = 'https://ramonita-photoelectric-alexander.ngrok-free.dev';
+  var BRANCH_ID = 'demo-branch-001';
+  var H = { 'Content-Type': 'application/json', 'ngrok-skip-browser-warning': '1' };
 
+  // ── CSS ──────────────────────────────────────────────────────
+  var style = document.createElement('style');
+  style.textContent = [
+    '#lc-btn{position:fixed;bottom:24px;right:24px;z-index:2147483646;width:58px;height:58px;border-radius:50%;background:#0f2044;color:white;border:none;font-size:26px;cursor:pointer;box-shadow:0 4px 20px rgba(15,32,68,.45);display:flex;align-items:center;justify-content:center;transition:transform .2s;}',
+    '#lc-btn:hover{transform:scale(1.08);}#lc-btn.lc-open{transform:scale(.92);}',
+    '#lc-panel{position:fixed;bottom:92px;right:24px;z-index:2147483645;width:360px;border-radius:16px;background:#fff;box-shadow:0 16px 56px rgba(0,0,0,.18);display:flex;flex-direction:column;overflow:hidden;opacity:0;transform:translateY(12px) scale(.97);pointer-events:none;transition:opacity .25s,transform .25s;max-height:90vh;}',
+    '#lc-panel.lc-open{opacity:1;transform:none;pointer-events:auto;}',
+    '#lc-head{background:#0f2044;color:#fff;padding:14px 16px;display:flex;align-items:center;gap:10px;flex-shrink:0;}',
+    '#lc-head .lc-av{width:38px;height:38px;background:rgba(255,255,255,.15);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}',
+    '#lc-head .lc-info h3{font-size:14px;font-weight:600;margin:0;}',
+    '#lc-head .lc-info p{font-size:11px;opacity:.7;margin:2px 0 0;}',
+    '#lc-body{padding:20px 18px;overflow-y:auto;flex:1;}',
+    '.lc-field{margin-bottom:14px;}',
+    '.lc-field label{display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:5px;}',
+    '.lc-field input,.lc-field select,.lc-field textarea{width:100%;padding:9px 11px;border:1.5px solid #e2e8f0;border-radius:9px;font-size:13px;font-family:inherit;outline:none;color:#1e293b;background:#fff;transition:border-color .15s;}',
+    '.lc-field input:focus,.lc-field select:focus,.lc-field textarea:focus{border-color:#0f2044;}',
+    '.lc-field textarea{resize:vertical;min-height:80px;}',
+    '.lc-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;}',
+    '#lc-submit{width:100%;padding:11px;background:#0f2044;color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;margin-top:4px;transition:background .15s;}',
+    '#lc-submit:hover:not(:disabled){background:#1a3260;}',
+    '#lc-submit:disabled{background:#6b7280;cursor:not-allowed;}',
+    '#lc-err{color:#dc2626;font-size:12px;margin-top:8px;display:none;text-align:center;}',
+    '#lc-ok{padding:32px 20px;text-align:center;display:none;}',
+    '#lc-ok .lc-check{font-size:48px;margin-bottom:12px;}',
+    '#lc-ok h3{font-size:16px;font-weight:700;color:#0f2044;margin-bottom:8px;}',
+    '#lc-ok p{font-size:13px;color:#64748b;line-height:1.6;}',
+    '#lc-ok .lc-new{margin-top:16px;background:none;border:1.5px solid #0f2044;color:#0f2044;padding:8px 18px;border-radius:8px;font-size:13px;cursor:pointer;font-weight:600;}',
+    '#lc-ok .lc-new:hover{background:#0f2044;color:#fff;}',
+    '.lc-loading{display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:lc-spin .7s linear infinite;vertical-align:middle;margin-right:6px;}',
+    '@keyframes lc-spin{to{transform:rotate(360deg)}}',
+    '.lc-hint{font-size:11px;color:#94a3b8;margin-top:3px;}',
+    '@media(max-width:420px){#lc-panel{width:calc(100vw - 16px);right:8px;bottom:82px;}}',
+  ].join('');
+  document.head.appendChild(style);
+
+  // ── Buton ────────────────────────────────────────────────────
   var btn = document.createElement('button');
-  btn.id = 'lc-btn'; btn.title = 'Avukatınızla mesajlaşın';
-  btn.setAttribute('aria-label', 'Avukatınızla mesajlaşın');
+  btn.id = 'lc-btn';
+  btn.title = 'Bize Mesaj Gönderin';
+  btn.setAttribute('aria-label', 'Bize Mesaj Gönderin');
   btn.textContent = '⚖️';
+  document.body.appendChild(btn);
 
-  var panel = document.createElement('div'); panel.id = 'lc-panel';
-  var head = document.createElement('div'); head.id = 'lc-head';
-  head.innerHTML = '<div class="av">⚖️</div><div><h3>Mos Hukuk Bürosu</h3><p id="lc-sub">Bağlanıyor...</p></div>';
-  panel.appendChild(head);
+  // ── Panel ────────────────────────────────────────────────────
+  var panel = document.createElement('div');
+  panel.id = 'lc-panel';
+  panel.innerHTML =
+    '<div id="lc-head">' +
+      '<div class="lc-av">⚖️</div>' +
+      '<div class="lc-info"><h3>Bize Ulaşın</h3><p>Avukatımıza mesaj gönderin</p></div>' +
+    '</div>' +
+    '<div id="lc-body">' +
+      '<div class="lc-row">' +
+        '<div class="lc-field"><label>Ad *</label><input id="lc-fname" type="text" placeholder="Adınız" maxlength="50"/></div>' +
+        '<div class="lc-field"><label>Soyad *</label><input id="lc-lname" type="text" placeholder="Soyadınız" maxlength="50"/></div>' +
+      '</div>' +
+      '<div class="lc-field"><label>E-posta</label><input id="lc-email" type="email" placeholder="ornek@mail.com" maxlength="100"/></div>' +
+      '<div class="lc-field"><label>Telefon</label><input id="lc-phone" type="tel" placeholder="05xx xxx xx xx" maxlength="20"/><div class="lc-hint">E-posta veya telefon zorunludur</div></div>' +
+      '<div class="lc-field"><label>Avukat Seçin</label><select id="lc-lawyer"><option value="">Yükleniyor...</option></select></div>' +
+      '<div class="lc-field"><label>Mesajınız *</label><textarea id="lc-msg" placeholder="Konunuzu kısaca anlatın..." maxlength="2000"></textarea></div>' +
+      '<button id="lc-submit">Mesaj Gönder</button>' +
+      '<div id="lc-err"></div>' +
+    '</div>' +
+    '<div id="lc-ok">' +
+      '<div class="lc-check">✅</div>' +
+      '<h3>Mesajınız İletildi!</h3>' +
+      '<p>Paylaştığınız iletişim adresine en kısa sürede dönüş yapılacaktır.</p>' +
+      '<button class="lc-new" id="lc-new-msg">Yeni Mesaj Gönder</button>' +
+    '</div>';
+  document.body.appendChild(panel);
 
-  var sessionId = null, lastCount = 0;
-
-  var joinWrap = document.createElement('div'); joinWrap.id = 'lc-join';
-  joinWrap.innerHTML = '<div class="lc-jcard"><div class="lc-spin"></div><p id="lc-jmsg">Davet linkiniz doğrulanıyor...</p></div>';
-  panel.appendChild(joinWrap);
-
-  var msgArea = document.createElement('div'); msgArea.id = 'lc-msgs';
-  msgArea.style.display = 'none';
-  msgArea.innerHTML = '<div class="lc-empty">Henüz mesaj yok.<br/>Avukatınıza mesaj gönderin.</div>';
-  panel.appendChild(msgArea);
-
-  var bar = document.createElement('div'); bar.id = 'lc-bar'; bar.style.display = 'none';
-  bar.innerHTML = '<input id="lc-input" type="text" placeholder="Mesajınızı yazın..." maxlength="2000"/><button id="lc-send">↑</button>';
-  panel.appendChild(bar);
-
-  document.body.appendChild(btn); document.body.appendChild(panel);
-
-  var open = false, joined = false;
+  // ── Aç / kapat ───────────────────────────────────────────────
+  var isOpen = false, lawyersLoaded = false;
   function toggle() {
-    open = !open;
-    panel.classList.toggle('open', open);
-    btn.classList.toggle('open', open);
-    btn.textContent = open ? '✕' : '⚖️';
-    if (open && !joined && token) doJoin();
+    isOpen = !isOpen;
+    panel.classList.toggle('lc-open', isOpen);
+    btn.classList.toggle('lc-open', isOpen);
+    btn.textContent = isOpen ? '✕' : '⚖️';
+    if (isOpen && !lawyersLoaded) loadLawyers();
   }
   btn.addEventListener('click', toggle);
 
-  function doJoin() {
-    joined = true;
-    fetch(API + '/auth/join', { method:'POST', headers: HEADERS, body: JSON.stringify({ token: token }) })
-      .then(function(r){ return r.json().then(function(d){ return {ok:r.ok,d:d}; }); })
-      .then(function(res) {
-        if (!res.ok) { showErr(res.d.error || 'Giriş başarısız'); return; }
-        sessionId = res.d.sessionId;
-        document.getElementById('lc-sub').textContent = res.d.clientName + ' olarak bağlandınız';
-        joinWrap.style.display = 'none'; msgArea.style.display = 'flex'; bar.style.display = 'flex';
-        fetchHistory(); setInterval(fetchHistory, 3000);
-      }).catch(function(){ showErr('Sunucuya bağlanılamadı.'); });
+  // ── Avukat listesi ───────────────────────────────────────────
+  function loadLawyers() {
+    lawyersLoaded = true;
+    var sel = document.getElementById('lc-lawyer');
+    fetch(CHATBOT + '/contact/lawyers?branchId=' + BRANCH_ID, { headers: H })
+      .then(function(r) { return r.json(); })
+      .then(function(d) {
+        var lawyers = d.lawyers || [];
+        sel.innerHTML = lawyers.length === 0
+          ? '<option value="">Avukat bulunamadı</option>'
+          : '<option value="">-- Avukat seçin --</option>' +
+            lawyers.map(function(l) {
+              return '<option value="' + l.id + '">' + esc(l.name) + ' (' + roleLabel(l.role) + ')</option>';
+            }).join('');
+      })
+      .catch(function() { sel.innerHTML = '<option value="">Seçim yapılamıyor</option>'; });
   }
 
-  function showErr(msg) {
-    var el = document.getElementById('lc-jmsg'); el.className = 'lc-err'; el.textContent = msg;
-    var sp = joinWrap.querySelector('.lc-spin'); if(sp) sp.style.display = 'none';
+  function roleLabel(r) {
+    return { ADMIN:'Yönetici', PARTNER:'Ortak', LAWYER:'Avukat', ASSISTANT:'Asistan' }[r] || r;
   }
 
-  function fetchHistory() {
-    if (!sessionId) return;
-    fetch(API + '/chat/history', { headers: Object.assign({}, HEADERS, {'X-Session-Id': sessionId}) })
-      .then(function(r){ return r.json(); })
-      .then(function(d) { if (d.messages.length !== lastCount) { renderMsgs(d.messages); lastCount = d.messages.length; } })
-      .catch(function(){});
-  }
+  // ── Gönder ───────────────────────────────────────────────────
+  document.getElementById('lc-submit').addEventListener('click', function() {
+    var fname  = document.getElementById('lc-fname').value.trim();
+    var lname  = document.getElementById('lc-lname').value.trim();
+    var email  = document.getElementById('lc-email').value.trim();
+    var phone  = document.getElementById('lc-phone').value.trim();
+    var lawyer = document.getElementById('lc-lawyer').value;
+    var msg    = document.getElementById('lc-msg').value.trim();
+    var errEl  = document.getElementById('lc-err');
+    var sbtn   = document.getElementById('lc-submit');
+    errEl.style.display = 'none';
 
-  function renderMsgs(msgs) {
-    if (!msgs.length) { msgArea.innerHTML = '<div class="lc-empty">Henüz mesaj yok.<br/>Avukatınıza mesaj gönderin.</div>'; return; }
-    msgArea.innerHTML = msgs.map(function(m) {
-      var t = new Date(m.ts).toLocaleTimeString('tr-TR', {hour:'2-digit',minute:'2-digit'});
-      var snd = m.role === 'lawyer' ? '<div class="mt">' + esc(m.senderName||'Avukat') + '</div>' : '';
-      return '<div class="lc-msg ' + m.role + '">' + esc(m.content) + snd + '<div class="mt">' + t + '</div></div>';
-    }).join('');
-    msgArea.scrollTop = msgArea.scrollHeight;
-  }
+    if (!fname || !lname) { showErr('Ad ve soyad zorunludur.'); return; }
+    if (!email && !phone) { showErr('E-posta veya telefon numarası zorunludur.'); return; }
+    if (email && !/^[^@]+@[^@]+\.[^@]+$/.test(email)) { showErr('Geçerli bir e-posta girin.'); return; }
+    if (!msg) { showErr('Lütfen mesajınızı yazın.'); return; }
 
-  function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+    sbtn.disabled = true;
+    sbtn.innerHTML = '<span class="lc-loading"></span>Gönderiliyor...';
 
-  function sendMsg() {
-    var inp = document.getElementById('lc-input'), sbtn = document.getElementById('lc-send');
-    var c = inp.value.trim(); if (!c || !sessionId) return;
-    inp.disabled = sbtn.disabled = true;
-    fetch(API + '/chat/message', { method:'POST', headers: Object.assign({}, HEADERS, {'X-Session-Id': sessionId}), body: JSON.stringify({content:c}) })
-      .then(function(r){ if(r.ok){ inp.value=''; fetchHistory(); } })
-      .catch(function(){})
-      .finally(function(){ inp.disabled = sbtn.disabled = false; inp.focus(); });
-  }
+    fetch(CHATBOT + '/contact', {
+      method: 'POST',
+      headers: H,
+      body: JSON.stringify({
+        senderName: fname + ' ' + lname,
+        senderEmail: email || undefined,
+        senderPhone: phone || undefined,
+        targetUserId: lawyer || undefined,
+        content: msg,
+      }),
+    })
+    .then(function(r) { return r.json().then(function(d) { return { ok: r.ok, d: d }; }); })
+    .then(function(res) {
+      if (!res.ok) { showErr(res.d.error || 'Gönderilemedi, tekrar deneyin.'); return; }
+      document.getElementById('lc-body').style.display = 'none';
+      document.getElementById('lc-ok').style.display = 'block';
+    })
+    .catch(function() { showErr('Sunucuya bağlanılamadı. Lütfen tekrar deneyin.'); })
+    .finally(function() { sbtn.disabled = false; sbtn.textContent = 'Mesaj Gönder'; });
+  });
 
-  document.addEventListener('click', function(e){ if(e.target && e.target.id==='lc-send') sendMsg(); });
-  document.addEventListener('keydown', function(e){ if(e.target && e.target.id==='lc-input' && e.key==='Enter'){ e.preventDefault(); sendMsg(); } });
+  document.getElementById('lc-new-msg').addEventListener('click', function() {
+    document.getElementById('lc-body').style.display = 'block';
+    document.getElementById('lc-ok').style.display = 'none';
+    document.getElementById('lc-fname').value = '';
+    document.getElementById('lc-lname').value = '';
+    document.getElementById('lc-email').value = '';
+    document.getElementById('lc-phone').value = '';
+    document.getElementById('lc-msg').value = '';
+  });
 
-  if (token) setTimeout(toggle, 400);
+  function showErr(msg) { var el = document.getElementById('lc-err'); el.textContent = msg; el.style.display = 'block'; }
+  function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 })();
 
 function openChat(e) { e.preventDefault(); var b = document.getElementById('lc-btn'); if(b) b.click(); }
